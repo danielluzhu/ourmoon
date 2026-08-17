@@ -1,0 +1,53 @@
+[Unit]
+Description=Family Table — shared conversation prompts for families
+Documentation=file:///workspace/readme.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/workspace
+Environment=HOME=/home/ubuntu
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOST=0.0.0.0
+Environment=DATA_DIR=/var/lib/familytable
+ExecStart=/home/ubuntu/.bun/bin/bun run /workspace/src/server.ts
+
+Restart=always
+RestartSec=2
+KillSignal=SIGINT
+TimeoutStopSec=10
+
+# SQLite database and uploaded recordings live here (created by systemd, owned by User=).
+StateDirectory=familytable
+StateDirectoryMode=0750
+
+# Sandboxing: the app only ever needs to read /workspace and write its state dir.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=read-only
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+RestrictNamespaces=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LockPersonality=true
+MemoryDenyWriteExecute=false
+SystemCallFilter=@system-service
+SystemCallArchitectures=native
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=familytable
+
+[Install]
+WantedBy=multi-user.target

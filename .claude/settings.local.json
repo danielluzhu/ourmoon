@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(command -v gh)",
+      "Bash(echo \"exit=$?\")",
+      "Read(//usr/bin/**)"
+    ]
+  }
+}

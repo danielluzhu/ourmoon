@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#faf6f0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#171512" media="(prefers-color-scheme: dark)" />
+    <title>Family Table</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="icon" href="/mark.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <!-- ---------------------------------------------------- welcome ---- -->
+    <main id="welcome" class="screen" hidden>
+      <div class="welcome-inner">
+        <header class="brand">
+          <img class="brand-mark" src="/mark.svg" alt="" width="72" height="72" />
+          <h1>Family Table</h1>
+          <p>One question at a time.<br />Everyone answers in a minute or less, whenever they get a moment.</p>
+        </header>
+
+        <div class="tabs" role="tablist">
+          <button class="tab is-active" data-tab="join" role="tab">Join a table</button>
+          <button class="tab" data-tab="create" role="tab">Start a table</button>
+        </div>
+
+        <form id="join-form" class="card panel" data-panel="join">
+          <label>
+            <span>Table code</span>
+            <input name="joinCode" class="code-input" autocomplete="off" autocapitalize="characters"
+                   spellcheck="false" placeholder="NGUYEN4K" maxlength="12" required />
+          </label>
+          <label>
+            <span>Your name</span>
+            <input name="name" autocomplete="given-name" placeholder="What your family calls you" maxlength="40" required />
+          </label>
+          <button class="btn btn-primary" type="submit">Take a seat</button>
+          <p class="hint">Using the same name as before puts you back in your own seat.</p>
+        </form>
+
+        <form id="create-form" class="card panel" data-panel="create" hidden>
+          <label>
+            <span>Table name</span>
+            <input name="tableName" placeholder="The Nguyens, Sunday Crew…" maxlength="60" required />
+          </label>
+          <label>
+            <span>Your name</span>
+            <input name="name" autocomplete="given-name" placeholder="What your family calls you" maxlength="40" required />
+          </label>
+          <button class="btn btn-primary" type="submit">Set the table</button>
+          <p class="hint">You will get a code to send to everyone else.</p>
+        </form>
+
+        <p id="welcome-error" class="error" hidden></p>
+      </div>
+    </main>
+
+    <!-- ------------------------------------------------------ table ---- -->
+    <main id="table" class="screen" hidden>
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 id="table-name"></h1>
+          <button id="code-btn" class="code-pill" title="Copy the join code">
+            <span id="table-code"></span>
+            <span class="code-copy">copy</span>
+          </button>
+        </div>
+        <div class="topbar-right">
+          <button id="members-btn" class="members-btn" title="See who is at this table">
+            <ul id="member-list" class="members"></ul>
+            <svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true">
+              <path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.6"
+                    stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </button>
+          <button id="leave-btn" class="linkish">Leave</button>
+        </div>
+      </header>
+
+      <div class="feed">
+        <section id="hero"></section>
+        <section id="archive"></section>
+      </div>
+
+      <div class="dock">
+        <div class="dock-inner">
+          <button class="btn btn-primary" id="draw-btn">
+            <svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true">
+              <path d="M10 3.2v13.6M3.2 10h13.6" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" fill="none"/>
+            </svg>
+            New topic
+          </button>
+          <div class="select-wrap">
+            <select id="category-select" aria-label="Kind of topic">
+              <option value="">Surprise us</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ----------------------------------------------------- roster ---- -->
+    <div id="roster" class="sheet" hidden>
+      <div class="sheet-card">
+        <button class="sheet-close" id="roster-close" aria-label="Close">
+          <svg viewBox="0 0 20 20" width="16" height="16"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+        </button>
+
+        <p class="sheet-eyebrow">At this table</p>
+        <p class="sheet-prompt" id="roster-title"></p>
+
+        <ul class="roster" id="roster-list"></ul>
+
+        <div class="invite">
+          <p class="invite-label" id="invite-label">Anyone with this code can pull up a chair.</p>
+          <button class="invite-code" id="invite-btn">
+            <span id="invite-code"></span>
+            <span class="invite-action" id="invite-action">Share</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- --------------------------------------------------- recorder ---- -->
+    <div id="recorder" class="sheet" hidden>
+      <div class="sheet-card">
+        <button class="sheet-close" id="rec-close" aria-label="Close">
+          <svg viewBox="0 0 20 20" width="16" height="16"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+        </button>
+
+        <p class="sheet-eyebrow">Your turn</p>
+        <p class="sheet-prompt" id="rec-prompt"></p>
+
+        <div id="rec-audio">
+          <div class="stage" id="rec-stage">
+            <div class="timer" id="rec-time">0:00</div>
+            <div class="meter" id="rec-level" aria-hidden="true"></div>
+            <div class="track">
+              <div class="track-fill" id="rec-track"></div>
+              <span class="track-tick" style="left:22%"></span>
+              <span class="track-tick" style="left:66%"></span>
+            </div>
+            <p class="track-legend"><span style="left:22%">20s</span><span style="left:66%">60s</span></p>
+          </div>
+
+          <div id="rec-preview" class="preview" hidden></div>
+
+          <div class="rec-actions">
+            <button class="rec-button" id="rec-toggle" aria-label="Start recording">
+              <span class="rec-ring"></span>
+              <span class="rec-glyph"></span>
+            </button>
+          </div>
+          <p class="rec-caption" id="rec-caption">Tap to start. Talk like you would on the phone.</p>
+
+          <div class="rec-confirm" hidden id="rec-confirm">
+            <button class="btn btn-ghost" id="rec-redo">Record again</button>
+            <button class="btn btn-primary" id="rec-send">Send to the table</button>
+          </div>
+
+          <button class="linkish" id="rec-switch-text">Rather type it</button>
+        </div>
+
+        <div id="rec-text" hidden>
+          <textarea id="rec-textarea" rows="6" maxlength="2000"
+                    placeholder="Tell it the way you would say it out loud…"></textarea>
+          <button class="btn btn-primary" id="rec-send-text">Send to the table</button>
+          <button class="linkish" id="rec-switch-audio">Record instead</button>
+        </div>
+
+        <p id="rec-error" class="error" hidden></p>
+      </div>
+    </div>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
