@@ -1,3 +1,7 @@
+# Our Moon
+
+Repo: https://github.com/danielluzhu/ourmoon
+
 I want to build a webapp for families, who all live in different cities, to be able to share conversations together. Eventually this will be phone app - this is proof of concept 
 
 Users (family members) can share a table (family unit) and all respond to the same topic. They are expected to share 20s - 1 minute stories. 
