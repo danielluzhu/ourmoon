@@ -1,5 +1,5 @@
 # Our Moon
-Live demo: https://danielluzhu.github.io/ourmoon/
+Live demo: https://danielluzhu.github.io/our-moon/
 
 The demo runs with no server behind it, so answers stay in the browser you
 open it in and a table cannot actually be shared. Run `bun run dev` for the
