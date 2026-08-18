@@ -1,6 +1,4 @@
 # Our Moon
-
-Repo: https://github.com/danielluzhu/ourmoon
 Live demo: https://danielluzhu.github.io/ourmoon/
 
 The demo runs with no server behind it, so answers stay in the browser you
