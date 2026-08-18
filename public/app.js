@@ -1,4 +1,4 @@
-// Family Table — proof of concept client. No build step on purpose.
+// Our Moon — proof of concept client. No build step on purpose.
 
 const $ = (sel) => document.querySelector(sel);
 const POLL_MS = 8000;
@@ -691,7 +691,7 @@ document.addEventListener("keydown", (e) => {
 
 $("#invite-btn").onclick = async (e) => {
   const label = $("#invite-action");
-  const message = `Join our Family Table. Code: ${state.table.joinCode}`;
+  const message = `Join our table on Our Moon. Code: ${state.table.joinCode}`;
   try {
     if (navigator.share) {
       await navigator.share({ title: state.table.name, text: message, url: location.origin });
