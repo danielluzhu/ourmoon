@@ -1,6 +1,11 @@
 # Our Moon
 
 Repo: https://github.com/danielluzhu/ourmoon
+Live demo: https://danielluzhu.github.io/ourmoon/
+
+The demo runs with no server behind it, so answers stay in the browser you
+open it in and a table cannot actually be shared. Run `bun run dev` for the
+real thing.
 
 I want to build a webapp for families, who all live in different cities, to be able to share conversations together. Eventually this will be phone app - this is proof of concept 
 
