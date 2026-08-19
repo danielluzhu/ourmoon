@@ -12,10 +12,17 @@ let libraryHandle;
 
 /** prompts.json sits next to the page, so resolve it against the document. */
 export function loadLibrary() {
-  libraryHandle ??= fetch(new URL("prompts.json", document.baseURI).href).then((res) => {
-    if (!res.ok) throw new Error("Could not load the question library.");
-    return res.json();
-  });
+  // A failed load must not be remembered: caching the rejected promise would
+  // turn one flaky request into a mode that never draws again until reload.
+  libraryHandle ??= fetch(new URL("prompts.json", document.baseURI).href)
+    .then((res) => {
+      if (!res.ok) throw new Error(`Could not load the questions (${res.status}).`);
+      return res.json();
+    })
+    .catch((err) => {
+      libraryHandle = undefined;
+      throw err;
+    });
   return libraryHandle;
 }
 

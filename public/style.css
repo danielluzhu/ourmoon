@@ -1257,6 +1257,15 @@ textarea { resize: vertical; line-height: 1.65; min-height: 140px; font-family: 
   font-size: 12.5px;
   color: var(--moon-3);
 }
+/* A draw that failed has to say so — a quiet button reads as a broken one. */
+.live-note.is-error {
+  color: hsl(6 100% 84%);
+  background: hsl(6 55% 24% / 0.5);
+  border: 1px solid hsl(6 50% 46% / 0.4);
+  border-radius: var(--r-md);
+  padding: 10px 12px;
+  font-size: 13px;
+}
 
 /* Landing on a laptop for a room full of people: give the question more room. */
 @media (min-width: 700px) {

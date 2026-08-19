@@ -868,9 +868,27 @@ function liveShow(step) {
   $("#live-play").hidden = step !== "play";
 }
 
-/** Draw the next question for the room, or say so when the deck has looped. */
+/** Tell the room when a draw failed, and offer the retry on the same button. */
+function liveFail(err) {
+  const note = $("#live-note");
+  note.textContent = err?.message || "Something went wrong drawing a question.";
+  note.classList.add("is-error");
+  note.hidden = false;
+  $("#live-next").textContent = "Try again";
+}
+
+/**
+ * Draw the next question for the room, or say so when the deck has looped.
+ * Never rejects — a silent failure here reads as a dead button.
+ */
 async function liveDraw() {
-  const library = await loadLibrary();
+  let library;
+  try {
+    library = await loadLibrary();
+  } catch (err) {
+    liveFail(err);
+    return false;
+  }
 
   const { prompt, text, exhausted } = drawPrompt(library, {
     usedIds: live.used,
@@ -891,8 +909,12 @@ async function liveDraw() {
   liveSave();
   livePaint();
 
-  $("#live-note").hidden = !exhausted;
-  if (exhausted) $("#live-note").textContent = "That is every question in the deck — going round again.";
+  const note = $("#live-note");
+  note.classList.remove("is-error");
+  note.hidden = !exhausted;
+  if (exhausted) note.textContent = "That is every question in the deck — going round again.";
+  $("#live-next").textContent = "Next question";
+  return true;
 }
 
 function livePaint() {
@@ -947,7 +969,7 @@ async function liveOpen() {
 
 $("#live-btn").onclick = () => {
   liveLabelBack();
-  liveOpen();
+  liveOpen();  // liveDraw reports its own failures, so nothing escapes here
 };
 
 $("#live-exit").onclick = () => {
