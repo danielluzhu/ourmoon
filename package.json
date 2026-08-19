@@ -5,9 +5,10 @@
   "description": "Proof of concept: families in different cities answering the same question, one short story at a time.",
   "type": "module",
   "scripts": {
-    "start": "bun run src/server.ts",
-    "dev": "bun --watch src/server.ts",
-    "typecheck": "tsc --noEmit"
+    "start": "bun run scripts/build-prompts.ts && bun run src/server.ts",
+    "dev": "bun run scripts/build-prompts.ts && bun --watch src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "prompts": "bun run scripts/build-prompts.ts"
   },
   "devDependencies": {
     "@types/bun": "^1.3.14",

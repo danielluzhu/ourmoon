@@ -6,30 +6,22 @@
  * rather than three times: skip prompts a group has already had, only use
  * {member} prompts when there are names to fill them with, and reshuffle
  * instead of refusing to deal when the deck runs dry.
+ *
+ * The library arrives as a module rather than a fetch. Fetching prompts.json
+ * broke in ways the room should never see — a catch-all route answering with
+ * index.html and a 200, so JSON.parse met "<!doctype" — and an import cannot
+ * be intercepted, mis-typed or served stale by a route that does not exist.
  */
 
-let libraryHandle;
+import library from "./prompts-data.js";
 
-/** prompts.json sits next to the page, so resolve it against the document. */
-export function loadLibrary() {
-  // A failed load must not be remembered: caching the rejected promise would
-  // turn one flaky request into a mode that never draws again until reload.
-  libraryHandle ??= fetch(new URL("prompts.json", document.baseURI).href)
-    .then(async (res) => {
-      if (!res.ok) throw new Error(`Could not load the questions (${res.status}).`);
-      // A catch-all route can answer 200 with an HTML page, and "unexpected
-      // token <" tells nobody anything. Check before handing it to the parser.
-      const body = await res.text();
-      if (!body.trimStart().startsWith("{")) {
-        throw new Error("The question library is not being served correctly.");
-      }
-      return JSON.parse(body);
-    })
-    .catch((err) => {
-      libraryHandle = undefined;
-      throw err;
-    });
-  return libraryHandle;
+/**
+ * The library is already here — this stays async so callers (which await it)
+ * do not have to care how it arrives.
+ */
+export async function loadLibrary() {
+  if (!library?.prompts?.length) throw new Error("The question library is empty.");
+  return library;
 }
 
 const pick = (items) => items[Math.floor(Math.random() * items.length)];
