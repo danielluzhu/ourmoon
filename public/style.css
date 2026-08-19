@@ -1069,6 +1069,200 @@ textarea { resize: vertical; line-height: 1.65; min-height: 140px; font-family: 
 
 .rec-confirm { display: flex; flex-direction: column-reverse; gap: 10px; width: 100%; }
 
+/* ============================================================ in person == */
+/* Everyone in one room, one phone, no table. Built to be read across a
+   kitchen table, so the question runs as large as the screen allows. */
+
+.live-entry {
+  margin: 18px 0 0;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--moon-3);
+}
+.live-entry .linkish { font-size: 13.5px; color: var(--accent); padding: 4px 2px; }
+
+#live {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: max(14px, env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.live-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 34px;
+}
+.live-count {
+  margin: 0;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 600;
+  color: var(--moon-3);
+}
+
+/* ---------------------------------------------------------------- setup */
+
+.live-setup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding: 20px 0 8px;
+  animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+.live-setup h2 {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+.live-blurb {
+  margin: -6px 0 6px;
+  text-align: center;
+  color: var(--moon-2);
+  font-size: 15px;
+  line-height: 1.6;
+  text-wrap: balance;
+}
+
+.live-add { display: flex; gap: 9px; }
+.live-add input { flex: 1; }
+.live-add .btn { flex: none; }
+
+.live-people {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.live-people:empty { display: none; }
+.live-people li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 7px 6px 13px;
+  border-radius: 999px;
+  background: hsl(232 40% 60% / 0.12);
+  border: 1px solid var(--line);
+  font-size: 14px;
+  animation: rise 0.28s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+.live-chip-name { color: var(--moon); }
+.live-chip-x {
+  border: 0;
+  background: hsl(232 40% 60% / 0.18);
+  color: var(--moon-3);
+  width: 20px;
+  height: 20px;
+  line-height: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 15px;
+  display: grid;
+  place-items: center;
+  transition: background 0.16s, color 0.16s;
+}
+.live-chip-x:hover { background: hsl(6 55% 40% / 0.45); color: hsl(6 100% 88%); }
+
+.live-choose { display: flex; gap: 9px; align-items: center; margin-top: 4px; }
+.live-choose .select-wrap { flex: 1; }
+.live-choose select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  padding-right: 34px;
+  cursor: pointer;
+  color: var(--moon-2);
+}
+.live-choose .btn-primary { flex: none; padding-inline: 26px; }
+
+/* ----------------------------------------------------------------- play */
+
+.live-play {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 22px;
+  padding: 12px 0;
+}
+
+/* The question, lit like the hero card but with nothing else competing. */
+.live-card {
+  --cat-h: 231;
+  --cat: hsl(var(--cat-h) 80% 80%);
+  --cat-wash: hsl(var(--cat-h) 60% 60% / 0.14);
+
+  position: relative;
+  padding: 34px 28px 36px;
+  border-radius: var(--r-xl);
+  border: 1px solid hsl(231 60% 78% / 0.26);
+  background:
+    radial-gradient(120% 70% at 50% 0%, var(--cat-wash), transparent 70%),
+    linear-gradient(180deg, hsl(232 38% 22% / 0.72), hsl(232 42% 15% / 0.72));
+  box-shadow:
+    var(--shadow-lg),
+    0 0 80px -18px hsl(231 100% 76% / 0.4),
+    inset 0 1px 0 hsl(0 0% 100% / 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  text-align: center;
+  animation: rise 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+.live-card .eyebrow { margin-bottom: 18px; justify-content: center; }
+
+.live-prompt {
+  font-size: clamp(26px, 6.4vw, 38px);
+  line-height: 1.18;
+  text-shadow: 0 0 46px hsl(231 100% 84% / 0.26);
+}
+.live-alt {
+  margin: 18px auto 0;
+  max-width: 34ch;
+  border-left: 0;
+  border-top: 1px solid var(--line-soft);
+  padding: 15px 0 0;
+  text-align: center;
+  font-size: 15px;
+}
+
+.live-first {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.live-actions { display: grid; gap: 6px; justify-items: center; }
+.live-actions .btn-primary { width: 100%; padding-block: 15px; font-size: 16px; }
+
+.live-note {
+  margin: 0;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--moon-3);
+}
+
+/* Landing on a laptop for a room full of people: give the question more room. */
+@media (min-width: 700px) {
+  .live-card { padding: 46px 44px 48px; }
+}
+
 /* ========================================================== demo note == */
 /* Only rendered by demo.js, on the serverless GitHub Pages build. */
 

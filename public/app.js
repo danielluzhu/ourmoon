@@ -1,5 +1,7 @@
 // Our Moon — proof of concept client. No build step on purpose.
 
+import { drawPrompt, loadLibrary } from "./draw.js";
+
 const $ = (sel) => document.querySelector(sel);
 const POLL_MS = 8000;
 const SOFT_LIMIT_MS = 60_000; // the "one minute" people are aiming for
@@ -224,6 +226,10 @@ async function decodePeaks(bytes) {
 function show(screen) {
   $("#welcome").hidden = screen !== "welcome";
   $("#table").hidden = screen !== "table";
+  $("#live").hidden = screen !== "live";
+  // In-person mode needs no server at all, so the demo warning does not apply.
+  const note = $("#demo-note");
+  if (note) note.hidden = screen === "live";
 }
 
 async function refresh() {
@@ -788,6 +794,199 @@ for (const [id, path] of [["#join-form", "/api/join"], ["#create-form", "/api/ta
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible" && state) refresh();
 });
+
+
+// -------------------------------------------------------------- in person
+
+/**
+ * In-person mode: everyone is in the same room, so there is no table to join,
+ * nothing to record and nothing to send anywhere. It draws from the same
+ * question library by the same rules, keeps track of what this group has
+ * already had, and otherwise stays out of the way.
+ *
+ * The whole mode is local — it runs with the network off, and on the static
+ * GitHub Pages build it is the real thing rather than a demo.
+ */
+
+const LIVE_KEY = "ourmoon-in-person";
+
+const liveBlank = () => ({ names: [], used: [], category: "", count: 0, current: null });
+
+let live = liveBlank();
+try {
+  live = { ...live, ...JSON.parse(localStorage.getItem(LIVE_KEY) ?? "{}") };
+} catch {
+  /* a corrupt entry is not worth failing over — start fresh */
+}
+
+function liveSave() {
+  try {
+    localStorage.setItem(LIVE_KEY, JSON.stringify(live));
+  } catch {
+    /* private mode: the round still plays, it just will not survive a reload */
+  }
+}
+
+function liveRenderPeople() {
+  $("#live-people").replaceChildren(
+    ...live.names.map((name, i) =>
+      el("li", {}, [
+        el("span", { className: "live-chip-name", textContent: name }),
+        el("button", {
+          className: "live-chip-x",
+          type: "button",
+          title: `Remove ${name}`,
+          textContent: "×",
+          onclick: () => {
+            live.names.splice(i, 1);
+            liveSave();
+            liveRenderPeople();
+          },
+        }),
+      ]),
+    ),
+  );
+
+  const hint = $("#live-people-hint");
+  if (live.names.length === 0) {
+    hint.textContent = "Names are optional, and stay on this phone. Add two or more and the questions start using them.";
+  } else if (live.names.length === 1) {
+    hint.textContent = "One more and the questions can start naming people.";
+  } else {
+    hint.textContent = `${listNames(live.names)} — questions can name any of you.`;
+  }
+}
+
+function liveShow(step) {
+  $("#live-setup").hidden = step !== "setup";
+  $("#live-play").hidden = step !== "play";
+}
+
+/** Draw the next question for the room, or say so when the deck has looped. */
+async function liveDraw() {
+  const library = await loadLibrary();
+
+  const { prompt, text, exhausted } = drawPrompt(library, {
+    usedIds: live.used,
+    memberNames: live.names,
+    category: live.category || undefined,
+  });
+
+  live.used.push(prompt.id);
+  live.count += 1;
+  live.current = {
+    text,
+    alt: prompt.alt ?? null,
+    category: prompt.category,
+    label: library.categories[prompt.category]?.label ?? prompt.category,
+    // Somebody has to go first, and nobody wants to decide.
+    first: live.names.length >= 2 ? live.names[Math.floor(Math.random() * live.names.length)] : null,
+  };
+  liveSave();
+  livePaint();
+
+  $("#live-note").hidden = !exhausted;
+  if (exhausted) $("#live-note").textContent = "That is every question in the deck — going round again.";
+}
+
+function livePaint() {
+  const now = live.current;
+  if (!now) return;
+
+  const card = $("#live-card");
+  card.style.setProperty("--cat-h", CATEGORY_HUE[now.category] ?? 231);
+  $("#live-eyebrow").textContent = now.label;
+  $("#live-prompt").textContent = now.text;
+
+  const alt = $("#live-alt");
+  alt.textContent = now.alt ?? "";
+  alt.hidden = !now.alt;
+
+  const first = $("#live-first");
+  first.textContent = now.first ? `${now.first} goes first` : "";
+  first.hidden = !now.first;
+
+  $("#live-count").textContent = `Question ${live.count}`;
+
+  // Re-run the entrance so each question arrives rather than swaps.
+  card.style.animation = "none";
+  void card.offsetWidth;
+  card.style.animation = "";
+}
+
+function liveOpen() {
+  liveRenderPeople();
+  liveShow(live.current ? "play" : "setup");
+  if (live.current) livePaint();
+  $("#live-count").textContent = live.count ? `Question ${live.count}` : "";
+  show("live");
+
+  loadLibrary()
+    .then((library) => {
+      const select = $("#live-category");
+      if (select.options.length <= 1) {
+        for (const [key, cat] of Object.entries(library.categories)) {
+          select.append(el("option", { value: key, textContent: cat.label }));
+        }
+      }
+      select.value = live.category ?? "";
+    })
+    .catch(() => {});
+}
+
+$("#live-btn").onclick = liveOpen;
+
+$("#live-exit").onclick = () => {
+  show("welcome");
+  $("#demo-note")?.removeAttribute("hidden");
+};
+
+$("#live-add").onsubmit = (event) => {
+  event.preventDefault();
+  const input = $("#live-name");
+  const name = input.value.replace(/\s+/g, " ").trim().slice(0, 40);
+  input.value = "";
+  input.focus();
+  if (!name) return;
+  if (live.names.some((n) => n.toLowerCase() === name.toLowerCase())) return;
+  live.names.push(name);
+  liveSave();
+  liveRenderPeople();
+};
+
+$("#live-category").onchange = (event) => {
+  live.category = event.target.value;
+  liveSave();
+};
+
+$("#live-start").onclick = async (event) => {
+  const button = event.currentTarget;
+  button.disabled = true;
+  try {
+    liveShow("play");
+    await liveDraw();
+  } catch (err) {
+    liveShow("setup");
+    $("#live-people-hint").textContent = err.message;
+  } finally {
+    button.disabled = false;
+  }
+};
+
+$("#live-next").onclick = async (event) => {
+  const button = event.currentTarget;
+  button.disabled = true;
+  try {
+    await liveDraw();
+  } finally {
+    button.disabled = false;
+  }
+};
+
+$("#live-back").onclick = () => {
+  liveRenderPeople();
+  liveShow("setup");
+};
 
 // ------------------------------------------------------------------ boot
 

@@ -1,9 +1,13 @@
 # Our Moon
 Live demo: https://danielluzhu.github.io/our-moon/
 
-The demo runs with no server behind it, so answers stay in the browser you
-open it in and a table cannot actually be shared. Run `bun run dev` for the
-real thing.
+Tables run with no server behind them on that link, so answers stay in the
+browser you open it in and a table cannot actually be shared. Run `bun run dev`
+for the real thing.
+
+**In person mode** is the exception: everyone is in the same room, so there is
+nothing to join and nothing to send anywhere. It needs no server by design, which
+makes it the real thing on the link above rather than a demo.
 
 I want to build a webapp for families, who all live in different cities, to be able to share conversations together. Eventually this will be phone app - this is proof of concept 
 

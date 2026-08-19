@@ -50,6 +50,12 @@
           <p class="hint">You will get a code to send to everyone else.</p>
         </form>
 
+
+        <p class="live-entry">
+          All in the same room?
+          <button id="live-btn" class="linkish" type="button">Play in person</button>
+        </p>
+
         <p id="welcome-error" class="error" hidden></p>
       </div>
     </main>
@@ -96,6 +102,54 @@
           </div>
         </div>
       </div>
+    </main>
+
+
+    <!-- -------------------------------------------------- in person ---- -->
+    <main id="live" class="screen" hidden>
+      <header class="live-top">
+        <button id="live-exit" class="linkish" type="button">Leave</button>
+        <p class="live-count" id="live-count"></p>
+      </header>
+
+      <section id="live-setup" class="live-setup">
+        <h2>Everyone in one room</h2>
+        <p class="live-blurb">
+          No table, no codes. One question at a time for the people right here &mdash;
+          pass the phone around, or leave it on the table.
+        </p>
+
+        <form id="live-add" class="live-add" autocomplete="off">
+          <input id="live-name" name="name" placeholder="Add who is here" maxlength="40" />
+          <button class="btn btn-ghost" type="submit">Add</button>
+        </form>
+        <ul id="live-people" class="live-people"></ul>
+        <p class="hint" id="live-people-hint">Names are optional, and stay on this phone. Add two or
+          more and the questions start using them.</p>
+
+        <div class="live-choose">
+          <div class="select-wrap">
+            <select id="live-category" aria-label="Kind of question">
+              <option value="">Surprise us</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" id="live-start" type="button">Start</button>
+        </div>
+      </section>
+
+      <section id="live-play" class="live-play" hidden>
+        <article class="live-card" id="live-card">
+          <p class="eyebrow" id="live-eyebrow"></p>
+          <h2 class="prompt live-prompt" id="live-prompt"></h2>
+          <p class="round-alt live-alt" id="live-alt" hidden></p>
+        </article>
+        <p class="live-first" id="live-first" hidden></p>
+        <div class="live-actions">
+          <button class="btn btn-primary" id="live-next" type="button">Next question</button>
+          <button class="linkish" id="live-back" type="button">Who is here</button>
+        </div>
+        <p class="live-note" id="live-note" hidden></p>
+      </section>
     </main>
 
     <!-- ----------------------------------------------------- roster ---- -->

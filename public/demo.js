@@ -80,49 +80,19 @@
 
   // ------------------------------------------------------------- prompts
 
-  let promptsHandle;
-  function library() {
-    promptsHandle ??= nativeFetch(new URL("prompts.json", document.baseURI).href).then((r) => {
-      if (!r.ok) throw new Error("prompts.json missing");
-      return r.json();
-    });
-    return promptsHandle;
+  /* The drawing rules live in draw.js so the server, this shim and in-person
+     mode cannot drift apart. Imported lazily: demo.js is a classic script so
+     that it patches fetch before app.js (a module) ever runs. */
+  let drawHandle;
+  function drawing() {
+    drawHandle ??= import(new URL("draw.js", document.baseURI).href);
+    return drawHandle;
   }
-
-  const pick = (items) => items[Math.floor(Math.random() * items.length)];
-
-  function pickCategory(pool, categories) {
-    const available = new Set(pool.map((p) => p.category));
-    const entries = Object.entries(categories).filter(([key]) => available.has(key));
-    const total = entries.reduce((sum, [, c]) => sum + c.weight, 0);
-    let roll = Math.random() * total;
-    for (const [key, c] of entries) {
-      roll -= c.weight;
-      if (roll <= 0) return key;
-    }
-    return entries[entries.length - 1][0];
+  async function library() {
+    return (await drawing()).loadLibrary();
   }
-
-  /** Port of drawPrompt in src/prompts.ts — same skip-used, same {member} rules. */
-  function drawPrompt(lib, { usedIds, memberNames, category }) {
-    const used = new Set(usedIds);
-    const canNameSomeone = memberNames.length >= 2;
-
-    let pool = lib.prompts.filter((p) => {
-      if (category && p.category !== category) return false;
-      if (!canNameSomeone && p.text.includes("{member}")) return false;
-      return true;
-    });
-    if (pool.length === 0) pool = lib.prompts.filter((p) => !p.text.includes("{member}"));
-
-    const fresh = pool.filter((p) => !used.has(p.id));
-    const deck = fresh.length > 0 ? fresh : pool;
-
-    const chosen = category ?? pickCategory(deck, lib.categories);
-    const inCategory = deck.filter((p) => p.category === chosen);
-    const prompt = pick(inCategory.length > 0 ? inCategory : deck);
-
-    return { prompt, text: prompt.text.replace("{member}", () => pick(memberNames)) };
+  async function draw(lib, opts) {
+    return (await drawing()).drawPrompt(lib, opts);
   }
 
   // ------------------------------------------------------------- helpers
@@ -280,7 +250,7 @@
         ? body.category
         : undefined;
 
-      const { prompt, text } = drawPrompt(lib, {
+      const { prompt, text } = await draw(lib, {
         usedIds: db.rounds.filter((r) => r.tableId === me.tableId).map((r) => r.promptId),
         memberNames: membersOf(me.tableId).map((m) => m.name),
         category,
