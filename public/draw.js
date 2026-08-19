@@ -15,9 +15,15 @@ export function loadLibrary() {
   // A failed load must not be remembered: caching the rejected promise would
   // turn one flaky request into a mode that never draws again until reload.
   libraryHandle ??= fetch(new URL("prompts.json", document.baseURI).href)
-    .then((res) => {
+    .then(async (res) => {
       if (!res.ok) throw new Error(`Could not load the questions (${res.status}).`);
-      return res.json();
+      // A catch-all route can answer 200 with an HTML page, and "unexpected
+      // token <" tells nobody anything. Check before handing it to the parser.
+      const body = await res.text();
+      if (!body.trimStart().startsWith("{")) {
+        throw new Error("The question library is not being served correctly.");
+      }
+      return JSON.parse(body);
     })
     .catch((err) => {
       libraryHandle = undefined;

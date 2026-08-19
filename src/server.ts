@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import { unlink } from "node:fs/promises";
 import { AUDIO_DIR, db, joinCode, uid } from "./db";
-import { CATEGORIES, drawPrompt } from "./prompts";
+import { CATEGORIES, PROMPTS_FILE, drawPrompt } from "./prompts";
 
 const PORT = Number(process.env.PORT ?? 3000);
 const PUBLIC_DIR = join(import.meta.dir, "..", "public");
@@ -398,6 +398,15 @@ const server = Bun.serve({
     }
 
     if (url.pathname === "/healthz") return new Response("ok");
+
+    // The question library. In-person mode draws locally and fetches this
+    // directly; it lives beside src/ rather than in public/, so without this
+    // route the catch-all below would hand the client index.html with a 200.
+    if (url.pathname === "/prompts.json") {
+      return new Response(Bun.file(PROMPTS_FILE), {
+        headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-cache" },
+      });
+    }
 
     const asset = url.pathname === "/" ? "/index.html" : url.pathname;
     if (/^\/[\w.-]+$/.test(asset)) {
