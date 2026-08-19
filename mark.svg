@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- One moon, and a seat for everyone around it. -->
+  <defs>
+    <radialGradient id="m" cx="36%" cy="30%" r="72%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="52%" stop-color="#e6ebff"/>
+      <stop offset="100%" stop-color="#aab6e8"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="55%" stop-color="#b9c6ff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#b9c6ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <circle cx="32" cy="32" r="30" fill="url(#halo)"/>
+
+  <!-- The moon, with a bite taken out of it by the night behind. -->
+  <circle cx="32" cy="32" r="15" fill="url(#m)"/>
+  <circle cx="27.5" cy="26.5" r="2.6" fill="#c3cdf2" opacity="0.55"/>
+  <circle cx="36.5" cy="35.5" r="3.4" fill="#c3cdf2" opacity="0.4"/>
+  <circle cx="30" cy="38" r="1.7" fill="#c3cdf2" opacity="0.45"/>
+
+  <!-- Six stars in orbit: everyone at the table, wherever they are. -->
+  <circle cx="32" cy="7.5" r="2.5" fill="#f0d5a0"/>
+  <circle cx="53.2" cy="19.8" r="2" fill="#f2b9a6"/>
+  <circle cx="53.2" cy="44.2" r="2.3" fill="#c4dcc7"/>
+  <circle cx="32" cy="56.5" r="2" fill="#e6c3df"/>
+  <circle cx="10.8" cy="44.2" r="2.5" fill="#b9c6ff"/>
+  <circle cx="10.8" cy="19.8" r="2" fill="#f0d5a0"/>
+</svg>
