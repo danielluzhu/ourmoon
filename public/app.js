@@ -841,6 +841,7 @@ function liveRenderPeople() {
             live.names.splice(i, 1);
             liveSave();
             liveRenderPeople();
+            liveLabelBack();
           },
         }),
       ]),
@@ -855,6 +856,11 @@ function liveRenderPeople() {
   } else {
     hint.textContent = `${listNames(live.names)} — questions can name any of you.`;
   }
+}
+
+/** "Add names" until there are some, then it is a roll call. */
+function liveLabelBack() {
+  $("#live-back").textContent = live.names.length ? "Who is here" : "Add names";
 }
 
 function liveShow(step) {
@@ -914,12 +920,17 @@ function livePaint() {
   card.style.animation = "";
 }
 
-function liveOpen() {
+async function liveOpen() {
   liveRenderPeople();
-  liveShow(live.current ? "play" : "setup");
-  if (live.current) livePaint();
-  $("#live-count").textContent = live.count ? `Question ${live.count}` : "";
+  liveShow("play");
   show("live");
+
+  // Nothing to set up: the first question is already on screen when you arrive.
+  if (live.current) {
+    livePaint();
+  } else {
+    await liveDraw();
+  }
 
   loadLibrary()
     .then((library) => {
@@ -934,7 +945,10 @@ function liveOpen() {
     .catch(() => {});
 }
 
-$("#live-btn").onclick = liveOpen;
+$("#live-btn").onclick = () => {
+  liveLabelBack();
+  liveOpen();
+};
 
 $("#live-exit").onclick = () => {
   show("welcome");
@@ -952,6 +966,7 @@ $("#live-add").onsubmit = (event) => {
   live.names.push(name);
   liveSave();
   liveRenderPeople();
+  liveLabelBack();
 };
 
 $("#live-category").onchange = (event) => {
@@ -959,18 +974,9 @@ $("#live-category").onchange = (event) => {
   liveSave();
 };
 
-$("#live-start").onclick = async (event) => {
-  const button = event.currentTarget;
-  button.disabled = true;
-  try {
-    liveShow("play");
-    await liveDraw();
-  } catch (err) {
-    liveShow("setup");
-    $("#live-people-hint").textContent = err.message;
-  } finally {
-    button.disabled = false;
-  }
+$("#live-start").onclick = () => {
+  liveShow("play");
+  liveLabelBack();
 };
 
 $("#live-next").onclick = async (event) => {
@@ -986,6 +992,7 @@ $("#live-next").onclick = async (event) => {
 $("#live-back").onclick = () => {
   liveRenderPeople();
   liveShow("setup");
+  $("#live-name").focus();
 };
 
 // ------------------------------------------------------------------ boot
